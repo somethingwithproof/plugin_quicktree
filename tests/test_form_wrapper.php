@@ -81,18 +81,20 @@ assert_true(
 );
 
 $source = file_get_contents(__DIR__ . '/../quicktree.php');
+assert_true('quicktree.php is readable', $source !== false);
+$source = ($source === false ? '' : $source);
 
 assert_true(
 	'quicktree.php includes ui helper file',
-	strpos($source, "include_once('plugins/quicktree/ui_helpers.php');") !== false
+	preg_match('/(?:include_once|require_once)\s*\(\s*[\'"]plugins\/quicktree\/ui_helpers\.php[\'"]\s*\)\s*;/', $source) === 1
 );
 assert_true(
 	'quicktree.php uses begin wrapper in add-tree and add-branch',
-	substr_count($source, 'quicktree_action_form_begin(') >= 2
+	preg_match_all('/quicktree_action_form_begin\s*\(/', $source, $begin_matches) >= 2
 );
 assert_true(
 	'quicktree.php uses end wrapper in add-tree and add-branch',
-	substr_count($source, 'quicktree_action_form_end();') >= 2
+	preg_match_all('/quicktree_action_form_end\s*\(\s*\)\s*;/', $source, $end_matches) >= 2
 );
 
 echo "\n";
